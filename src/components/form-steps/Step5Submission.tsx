@@ -4,10 +4,16 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { SendIcon, MailIcon, MessageCircleIcon, CheckIcon, LoaderIcon } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { SentIcon, Mail01Icon, WhatsappIcon, Tick01Icon, Loading01Icon, ArrowLeft01Icon } from "@hugeicons/core-free-icons";
 import { SubmissionPreference } from "@/types/form";
 import { saveFormStep } from "@/lib/formStore";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent } from "@/components/ui/card";
 
 const schema = z.object({
   deliveryMethod: z.enum(["email", "whatsapp", "both"]),
@@ -29,27 +35,22 @@ type DeliveryMethod = "email" | "whatsapp" | "both";
 
 const methods: { value: DeliveryMethod; label: string; icon: React.ReactNode; hint: string }[] = [
   {
-    value: "email",
     label: "Email",
-    icon: <MailIcon className="w-5 h-5" />,
-    hint: "Receive a detailed PDF report to your inbox",
+    value: "email" as const,
+    icon: <HugeiconsIcon icon={Mail01Icon} className="w-5 h-5" />,
+    hint: "PDF directly to your inbox"
   },
   {
-    value: "whatsapp",
     label: "WhatsApp",
-    icon: <MessageCircleIcon className="w-5 h-5" />,
-    hint: "Get a quick summary on WhatsApp",
+    value: "whatsapp" as const,
+    icon: <HugeiconsIcon icon={WhatsappIcon} className="w-5 h-5 text-green-500" />,
+    hint: "Instant updates via chat"
   },
   {
-    value: "both",
     label: "Both",
-    icon: (
-      <span className="flex gap-0.5">
-        <MailIcon className="w-4 h-4" />
-        <MessageCircleIcon className="w-4 h-4" />
-      </span>
-    ),
-    hint: "Full report via email + summary on WhatsApp",
+    value: "both" as const,
+    icon: <HugeiconsIcon icon={SentIcon} className="w-5 h-5 text-campus-500" />,
+    hint: "Best for sharing & storage"
   },
 ];
 
@@ -62,12 +63,19 @@ export function Step5Submission({ defaultEmail, defaultValues, onSubmit, onBack,
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
-  } = useForm<SubmissionPreference>({
+  } = useForm<SubmissionPreference & { emailInput?: string; whatsappInput?: string }>({
     resolver: zodResolver(schema),
     defaultValues: {
       deliveryMethod: method,
-      contactValue: defaultValues?.contactValue ?? defaultEmail ?? "",
+      emailInput: defaultValues?.deliveryMethod === "both" 
+        ? (defaultValues?.contactValue ?? "").split('|')[0] 
+        : (defaultValues?.deliveryMethod === "email" ? defaultValues?.contactValue : (defaultEmail ?? "")),
+      whatsappInput: defaultValues?.deliveryMethod === "both" 
+        ? (defaultValues?.contactValue ?? "").split('|')[1] 
+        : (defaultValues?.deliveryMethod === "whatsapp" ? defaultValues?.contactValue : ""),
+      contactValue: defaultValues?.contactValue ?? "",
       agreeToTerms: false,
     },
   });
@@ -77,9 +85,24 @@ export function Step5Submission({ defaultEmail, defaultValues, onSubmit, onBack,
     setValue("deliveryMethod", m);
   };
 
-  const handleFormSubmit = (data: SubmissionPreference) => {
-    saveFormStep("submission", data);
-    onSubmit(data);
+  const handleFormSubmit = (data: SubmissionPreference & { emailInput?: string; whatsappInput?: string }) => {
+    let finalContact = "";
+    if (data.deliveryMethod === "both") {
+      finalContact = `${data.emailInput || ""}|${data.whatsappInput || ""}`;
+    } else if (data.deliveryMethod === "email") {
+      finalContact = data.emailInput || "";
+    } else {
+      finalContact = data.whatsappInput || "";
+    }
+
+    const submissionData: SubmissionPreference = {
+      deliveryMethod: data.deliveryMethod,
+      contactValue: finalContact || data.contactValue,
+      agreeToTerms: data.agreeToTerms,
+    };
+
+    saveFormStep("submission", submissionData);
+    onSubmit(submissionData);
   };
 
   const isWhatsapp = method === "whatsapp" || method === "both";
@@ -90,7 +113,7 @@ export function Step5Submission({ defaultEmail, defaultValues, onSubmit, onBack,
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-1">
           <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-            <SendIcon className="w-4 h-4 text-green-600" />
+            <HugeiconsIcon icon={SentIcon} className="w-4 h-4 text-green-600" />
           </div>
           <h2 className="text-xl font-bold text-slate-800">Almost Done!</h2>
         </div>
@@ -99,36 +122,33 @@ export function Step5Submission({ defaultEmail, defaultValues, onSubmit, onBack,
         </p>
       </div>
 
-      {/* Review summary */}
-      <div className="bg-gradient-to-br from-campus-50 to-indigo-50 border border-campus-100 rounded-xl p-4 mb-6">
-        <p className="text-xs font-semibold text-campus-600 uppercase tracking-wide mb-2">
-          ✅ Your submission includes
-        </p>
-        <ul className="space-y-1.5 text-sm text-slate-700">
-          <li className="flex items-center gap-2">
-            <CheckIcon className="w-3.5 h-3.5 text-green-500 shrink-0" />
-            Personal & academic details
-          </li>
-          <li className="flex items-center gap-2">
-            <CheckIcon className="w-3.5 h-3.5 text-green-500 shrink-0" />
-            Domain interests and preferences
-          </li>
-          <li className="flex items-center gap-2">
-            <CheckIcon className="w-3.5 h-3.5 text-green-500 shrink-0" />
-            Domain-specific knowledge assessment
-          </li>
-          <li className="flex items-center gap-2">
-            <CheckIcon className="w-3.5 h-3.5 text-green-500 shrink-0" />
-            Challenges, approach & goals
-          </li>
-        </ul>
-      </div>
+      <Card className="bg-gradient-to-br from-campus-50/50 to-indigo-50/50 border-campus-100 shadow-sm mb-8">
+        <CardContent className="p-4">
+          <p className="text-[10px] font-bold text-campus-600 uppercase tracking-widest mb-3">
+            Your Assessment Summary
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4">
+            {[
+              "Personal & academic details",
+              "Domain interests & preferences",
+              "Knowledge assessment responses",
+              "Challenges, approach & goals"
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-2 text-sm text-slate-700">
+                <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                  <HugeiconsIcon icon={Tick01Icon} className="w-3 h-3 text-green-600" />
+                </div>
+                {item}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Delivery method */}
-      <div className="mb-5">
-        <label className="label-text text-base mb-3">
+      <div className="mb-8">
+        <Label className="text-base font-semibold text-slate-800 mb-4 block">
           📬 How should we send your results?
-        </label>
+        </Label>
         <div className="grid grid-cols-3 gap-3">
           {methods.map((m) => (
             <button
@@ -136,99 +156,120 @@ export function Step5Submission({ defaultEmail, defaultValues, onSubmit, onBack,
               type="button"
               onClick={() => handleMethodSelect(m.value)}
               className={cn(
-                "flex flex-col items-center gap-2 p-4 rounded-xl border-2 text-center transition-all duration-200",
+                "group flex flex-col items-center gap-2 p-4 rounded-xl border-2 text-center transition-all duration-300",
                 method === m.value
-                  ? "border-campus-500 bg-campus-50 text-campus-700"
-                  : "border-slate-200 text-slate-500 hover:border-campus-300"
+                  ? "border-campus-500 bg-campus-50/50 text-campus-700 shadow-sm"
+                  : "border-slate-100 text-slate-400 hover:border-slate-200 hover:bg-slate-50/50"
               )}
             >
-              {m.icon}
-              <span className="text-sm font-medium">{m.label}</span>
-              <span className="text-xs text-slate-400 leading-tight hidden sm:block">{m.hint}</span>
+              <div className={cn(
+                "w-10 h-10 rounded-full flex items-center justify-center transition-colors",
+                method === m.value ? "bg-campus-500 text-white" : "bg-slate-50 text-slate-400 group-hover:bg-slate-100"
+              )}>
+                {m.icon}
+              </div>
+              <span className="text-sm font-bold">{m.label}</span>
+              <span className="text-[10px] text-slate-400 leading-tight hidden sm:block opacity-70 group-hover:opacity-100">{m.hint}</span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Contact input */}
-      <div className="mb-5 space-y-3">
+      <div className="mb-8 space-y-4">
         {isEmail && (
-          <div>
-            <label className="label-text">
-              <MailIcon className="w-3.5 h-3.5 text-campus-400" />
+          <div className="space-y-2">
+            <Label htmlFor="emailInput" className="flex items-center gap-2 text-slate-700">
+              <HugeiconsIcon icon={Mail01Icon} className="w-4 h-4 text-campus-500" />
               Email Address
-            </label>
-            <input
-              {...register("contactValue")}
+            </Label>
+            <Input
+              id="emailInput"
+              {...register("emailInput")}
               type="email"
-              className="input-field"
               placeholder="your@email.com"
+              className={cn(errors.contactValue && "border-destructive ring-destructive/20")}
             />
           </div>
         )}
         {isWhatsapp && (
-          <div>
-            <label className="label-text">
-              <MessageCircleIcon className="w-3.5 h-3.5 text-green-500" />
+          <div className="space-y-2">
+            <Label htmlFor="whatsappInput" className="flex items-center gap-2 text-slate-700">
+              <HugeiconsIcon icon={WhatsappIcon} className="w-4 h-4 text-green-500" />
               WhatsApp Number (with country code)
-            </label>
-            <input
+            </Label>
+            <Input
+              id="whatsappInput"
+              {...register("whatsappInput")}
               type="tel"
-              className="input-field"
               placeholder="+91 98765 43210"
-              onChange={(e) =>
-                setValue(
-                  "contactValue",
-                  isEmail
-                    ? `${(document.querySelector('input[type="email"]') as HTMLInputElement)?.value ?? ""}|${e.target.value}`
-                    : e.target.value
-                )
-              }
+              className={cn(errors.contactValue && "border-destructive ring-destructive/20")}
             />
           </div>
         )}
         {errors.contactValue && (
-          <p className="error-text">⚠ {errors.contactValue.message}</p>
+          <p className="text-xs text-destructive flex items-center gap-1 animate-fade-in">
+            <span className="text-sm">⚠</span> {errors.contactValue.message}
+          </p>
         )}
       </div>
 
-      {/* Agreement */}
-      <label className="flex items-start gap-3 cursor-pointer p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-        <input
-          type="checkbox"
-          {...register("agreeToTerms")}
-          className="mt-0.5 w-4 h-4 rounded accent-campus-600 cursor-pointer"
-        />
-        <span className="text-sm text-slate-600">
-          I agree to receive my assessment results and personalised career suggestions to the contact
-          provided above. I understand this data will be used only for generating my report.
-        </span>
-      </label>
-      {errors.agreeToTerms && (
-        <p className="error-text mt-1">⚠ {errors.agreeToTerms.message}</p>
-      )}
+      <div className="space-y-3">
+        <div 
+          className={cn(
+            "flex items-start gap-3 p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer",
+            errors.agreeToTerms ? "border-destructive/20 bg-destructive/5" : "border-slate-100 hover:border-slate-200 hover:bg-slate-50/50"
+          )}
+          onClick={() => {
+            const current = (document.getElementById('agreeToTerms') as HTMLInputElement)?.checked;
+            setValue("agreeToTerms", !current, { shouldValidate: true });
+          }}
+        >
+          <Checkbox 
+            id="agreeToTerms"
+            {...register("agreeToTerms")}
+            onCheckedChange={(checked) => setValue("agreeToTerms", !!checked, { shouldValidate: true })}
+            className="mt-0.5 border-slate-300 data-checked:bg-campus-600 data-checked:border-campus-600"
+          />
+          <Label htmlFor="agreeToTerms" className="text-xs sm:text-sm text-slate-600 leading-relaxed cursor-pointer font-normal">
+            I agree to receive my assessment results and personalised career suggestions to the contact
+            provided above. I understand this data will be used only for generating my report.
+          </Label>
+        </div>
+        {errors.agreeToTerms && (
+          <p className="text-xs text-destructive flex items-center gap-1 animate-fade-in">
+            <span className="text-sm">⚠</span> {errors.agreeToTerms.message}
+          </p>
+        )}
+      </div>
 
-      <div className="mt-8 flex justify-between">
-        <button type="button" onClick={onBack} className="btn-secondary" disabled={isSubmitting}>
-          ← Back
-        </button>
-        <button
+      <div className="mt-10 flex justify-between">
+        <Button 
+          variant="outline" 
+          type="button" 
+          onClick={onBack} 
+          disabled={isSubmitting} 
+          className="gap-2 px-6"
+        >
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="w-4 h-4" />
+          Back
+        </Button>
+        <Button
           type="submit"
           disabled={isSubmitting}
-          className="btn-primary flex items-center gap-2"
+          className="bg-green-600 hover:bg-green-700 text-white gap-2 px-8 shadow-green-200 shadow-lg"
         >
           {isSubmitting ? (
             <>
-              <LoaderIcon className="w-4 h-4 animate-spin" />
-              Analysing…
+              <HugeiconsIcon icon={Loading01Icon} className="w-4 h-4 animate-spin" />
+              Processing...
             </>
           ) : (
             <>
-              <SendIcon className="w-4 h-4" />
+              <HugeiconsIcon icon={SentIcon} className="w-4 h-4" />
               Submit & Get Results
             </>
           )}
-        </button>
+        </Button>
       </div>
     </form>
   );

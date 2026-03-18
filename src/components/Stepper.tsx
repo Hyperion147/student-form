@@ -1,8 +1,10 @@
 "use client";
 
-import { CheckIcon } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Tick01Icon } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
 import { STEP_LABELS } from "@/types/form";
+import { Progress } from "@/components/ui/progress";
 
 interface StepperProps {
   currentStep: number;
@@ -30,11 +32,10 @@ export function Stepper({ currentStep }: StepperProps) {
 
       {/* Desktop: full stepper */}
       <div className="hidden sm:flex items-start justify-between relative">
-        {/* Progress line */}
-        <div className="absolute top-5 left-0 right-0 h-0.5 bg-slate-200 -z-0">
-          <div
-            className="h-full bg-campus-500 transition-all duration-500 ease-out"
-            style={{ width: `${(currentStep / (STEP_LABELS.length - 1)) * 100}%` }}
+        <div className="absolute top-5 left-0 right-0 z-0">
+          <Progress 
+            value={(currentStep / (STEP_LABELS.length - 1)) * 100} 
+            className="h-0.5 bg-slate-200"
           />
         </div>
 
@@ -51,7 +52,7 @@ export function Stepper({ currentStep }: StepperProps) {
               )}
             >
               {i < currentStep ? (
-                <CheckIcon className="w-5 h-5" />
+                <HugeiconsIcon icon={Tick01Icon} className="w-5 h-5" />
               ) : (
                 <span>{i + 1}</span>
               )}

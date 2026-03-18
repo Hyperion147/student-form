@@ -1,21 +1,59 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useEffect } from "react";
-import { UserIcon, BookOpenIcon, MailIcon, PhoneIcon, BadgeIcon, BuildingIcon } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { 
+  UserIcon, 
+  BookOpen01Icon, 
+  Mail01Icon, 
+  CallIcon, 
+  LicenseIcon, 
+  Building01Icon, 
+  ArrowRight01Icon 
+} from "@hugeicons/core-free-icons";
 import { PersonalInfo } from "@/types/form";
 import { saveFormStep } from "@/lib/formStore";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 const schema = z.object({
-  fullName: z.string().min(2, "Full name must be at least 2 characters"),
-  rollNo: z.string().min(2, "Roll number is required"),
-  email: z.string().email("Please enter a valid email"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits").max(15),
-  year: z.string().min(1, "Please select your year of study"),
-  branch: z.string().min(2, "Branch/Course is required"),
-  college: z.string().min(2, "College name is required"),
+  fullName: z.string().trim().min(2, "Please enter your full name (minimum 2 chars)"),
+  rollNo: z.string().trim().min(3, "Please enter your correct roll number"),
+  email: z.string().email("Please enter a valid official email"),
+  phone: z.string().trim().min(10, "Please enter a valid 10-digit phone number").max(13, "Phone number is too long"),
+  year: z.string().min(1, "Please select your current year of study"),
+  branch: z.string().min(1, "Please select your branch or course"),
+  college: z.string().min(1, "Please select your college"),
+  otherBranch: z.string().optional(),
+  otherCollege: z.string().optional(),
+}).refine((data) => {
+  if (data.branch === "Other") {
+    return data.otherBranch && data.otherBranch.trim().length >= 2;
+  }
+  return true;
+}, {
+  message: "Please specify your branch name",
+  path: ["otherBranch"],
+}).refine((data) => {
+  if (data.college === "Other") {
+    return data.otherCollege && data.otherCollege.trim().length >= 2;
+  }
+  return true;
+}, {
+  message: "Please specify your college name",
+  path: ["otherCollege"],
 });
 
 interface Props {
@@ -30,10 +68,20 @@ export function Step1PersonalInfo({ defaultValues, onNext }: Props) {
     register,
     handleSubmit,
     watch,
+    control,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<PersonalInfo & { otherBranch?: string; otherCollege?: string }>({
     resolver: zodResolver(schema),
-    defaultValues: defaultValues ?? {},
+    defaultValues: {
+      fullName: defaultValues?.fullName || "",
+      rollNo: defaultValues?.rollNo || "",
+      email: defaultValues?.email || "",
+      phone: defaultValues?.phone || "",
+      year: defaultValues?.year || "",
+      branch: defaultValues?.branch || "",
+      college: defaultValues?.college || "",
+    },
   });
 
   const selectedBranch = watch("branch");
@@ -56,7 +104,7 @@ export function Step1PersonalInfo({ defaultValues, onNext }: Props) {
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-1">
           <div className="w-8 h-8 rounded-full bg-campus-100 flex items-center justify-center">
-            <UserIcon className="w-4 h-4 text-campus-600" />
+            <HugeiconsIcon icon={UserIcon} className="w-4 h-4 text-campus-600" />
           </div>
           <h2 className="text-xl font-bold text-slate-800">Tell us about yourself</h2>
         </div>
@@ -66,172 +114,228 @@ export function Step1PersonalInfo({ defaultValues, onNext }: Props) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Full Name */}
-        <div className="sm:col-span-2">
-          <label className="label-text">
-            <UserIcon className="w-3.5 h-3.5 text-campus-400" />
+        <div className="sm:col-span-2 space-y-2">
+          <Label htmlFor="fullName" className="flex items-center gap-2 text-slate-700">
+            <HugeiconsIcon icon={UserIcon} className="w-4 h-4 text-campus-500" />
             Full Name
-          </label>
-          <input
+          </Label>
+          <Input
+            id="fullName"
             {...register("fullName")}
-            className="input-field"
             placeholder="e.g. Aarav Kumar"
+            className={cn(errors.fullName && "border-destructive ring-destructive/20")}
           />
           {errors.fullName && (
-            <p className="error-text">⚠ {errors.fullName.message}</p>
+            <p className="text-xs text-destructive flex items-center gap-1 animate-fade-in">
+              <span className="text-sm">⚠</span> {errors.fullName.message}
+            </p>
           )}
         </div>
 
-        {/* Roll Number */}
-        <div>
-          <label className="label-text">
-            <BadgeIcon className="w-3.5 h-3.5 text-campus-400" />
+        <div className="space-y-2">
+          <Label htmlFor="rollNo" className="flex items-center gap-2 text-slate-700">
+            <HugeiconsIcon icon={LicenseIcon} className="w-3.5 h-3.5 text-campus-500" />
             Roll Number
-          </label>
-          <input
+          </Label>
+          <Input
+            id="rollNo"
             {...register("rollNo")}
-            className="input-field"
             placeholder="e.g. 2021CS0142"
+            className={cn(errors.rollNo && "border-destructive ring-destructive/20")}
           />
           {errors.rollNo && (
-            <p className="error-text">⚠ {errors.rollNo.message}</p>
+            <p className="text-xs text-destructive flex items-center gap-1 animate-fade-in">
+              <span className="text-sm">⚠</span> {errors.rollNo.message}
+            </p>
           )}
         </div>
 
-        {/* Year */}
-        <div>
-          <label className="label-text">
-            <BookOpenIcon className="w-3.5 h-3.5 text-campus-400" />
+        <div className="space-y-2">
+          <Label htmlFor="year" className="flex items-center gap-2 text-slate-700">
+            <HugeiconsIcon icon={BookOpen01Icon} className="w-4 h-4 text-campus-500" />
             Year of Study
-          </label>
-          <select {...register("year")} className="input-field cursor-pointer">
-            <option value="">Select year…</option>
-            {years.map((y) => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </select>
+          </Label>
+          <Controller
+            name="year"
+            control={control}
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} value={field.value}>
+                <SelectTrigger id="year" className={cn("w-full h-10", errors.year && "border-destructive ring-destructive/20")}>
+                  <SelectValue placeholder="Select year…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {years.map((y) => (
+                    <SelectItem key={y} value={y}>{y}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
           {errors.year && (
-            <p className="error-text">⚠ {errors.year.message}</p>
+            <p className="text-xs text-destructive flex items-center gap-1 animate-fade-in">
+              <span className="text-sm">⚠</span> {errors.year.message}
+            </p>
           )}
         </div>
 
-        {/* Email */}
-        <div>
-          <label className="label-text">
-            <MailIcon className="w-3.5 h-3.5 text-campus-400" />
+        <div className="space-y-2">
+          <Label htmlFor="email" className="flex items-center gap-2 text-slate-700">
+            <HugeiconsIcon icon={Mail01Icon} className="w-3.5 h-3.5 text-campus-500" />
             Email Address
-          </label>
-          <input
-            {...register("email")}
+          </Label>
+          <Input
+            id="email"
             type="email"
-            className="input-field"
+            {...register("email")}
             placeholder="student@college.edu"
+            className={cn(errors.email && "border-destructive ring-destructive/20")}
           />
           {errors.email && (
-            <p className="error-text">⚠ {errors.email.message}</p>
+            <p className="text-xs text-destructive flex items-center gap-1 animate-fade-in">
+              <span className="text-sm">⚠</span> {errors.email.message}
+            </p>
           )}
         </div>
 
-        {/* Phone */}
-        <div>
-          <label className="label-text">
-            <PhoneIcon className="w-3.5 h-3.5 text-campus-400" />
+        <div className="space-y-2">
+          <Label htmlFor="phone" className="flex items-center gap-2 text-slate-700">
+            <HugeiconsIcon icon={CallIcon} className="w-3.5 h-3.5 text-campus-500" />
             Phone Number
-          </label>
-          <input
-            {...register("phone")}
+          </Label>
+          <Input
+            id="phone"
             type="tel"
-            className="input-field"
+            {...register("phone")}
             placeholder="+91 98765 43210"
+            className={cn(errors.phone && "border-destructive ring-destructive/20")}
           />
           {errors.phone && (
-            <p className="error-text">⚠ {errors.phone.message}</p>
+            <p className="text-xs text-destructive flex items-center gap-1 animate-fade-in">
+              <span className="text-sm">⚠</span> {errors.phone.message}
+            </p>
           )}
         </div>
 
-        {/* Branch */}
-        <div className={selectedBranch === "Other" ? "sm:col-span-1" : "sm:col-span-1"}>
-          <label className="label-text">
-            <BookOpenIcon className="w-3.5 h-3.5 text-campus-400" />
+        <div className={cn("space-y-2", selectedBranch === "Other" ? "sm:col-span-1" : "sm:col-span-1")}>
+          <Label htmlFor="branch" className="flex items-center gap-2 text-slate-700">
+            <HugeiconsIcon icon={BookOpen01Icon} className="w-4 h-4 text-campus-500" />
             Branch / Course
-          </label>
-          <select {...register("branch")} className="input-field cursor-pointer">
-            <option value="">Select branch…</option>
-            {[
-              "BCA",
-              "BBA",
-              "B.A",
-              "B.Sc",
-              "B.Com",
-              "Other",
-            ].map((b) => (
-              <option key={b} value={b}>
-                {b}
-              </option>
-            ))}
-          </select>
+          </Label>
+          <Controller
+            name="branch"
+            control={control}
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} value={field.value}>
+                <SelectTrigger id="branch" className={cn("w-full h-10", errors.branch && "border-destructive ring-destructive/20")}>
+                  <SelectValue placeholder="Select branch…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {[
+                    "BCA",
+                    "BBA",
+                    "B.A",
+                    "B.Sc",
+                    "B.Com",
+                    "Other",
+                  ].map((b) => (
+                    <SelectItem key={b} value={b}>
+                      {b}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
           {errors.branch && (
-            <p className="error-text">⚠ {errors.branch.message}</p>
+            <p className="text-xs text-destructive flex items-center gap-1 animate-fade-in">
+              <span className="text-sm">⚠</span> {errors.branch.message}
+            </p>
           )}
         </div>
 
-        {/* Other Branch Input */}
         {selectedBranch === "Other" && (
-          <div className="animate-fade-in">
-            <label className="label-text">
-              <BookOpenIcon className="w-3.5 h-3.5 text-campus-400" />
+          <div className="space-y-2 animate-fade-in">
+            <Label htmlFor="otherBranch" className="flex items-center gap-2 text-slate-700">
+              <HugeiconsIcon icon={BookOpen01Icon} className="w-3.5 h-3.5 text-campus-500" />
               Specify Branch
-            </label>
-            <input
+            </Label>
+            <Input
+              id="otherBranch"
               {...register("otherBranch")}
-              className="input-field"
               placeholder="Enter your branch name"
+              className={cn(errors.otherBranch && "border-destructive ring-destructive/20")}
             />
+            {errors.otherBranch && (
+              <p className="text-xs text-destructive flex items-center gap-1 animate-fade-in">
+                <span className="text-sm">⚠</span> {errors.otherBranch.message}
+              </p>
+            )}
           </div>
         )}
 
-        {/* College */}
-        <div className={selectedCollege === "Other" ? "sm:col-span-1" : "sm:col-span-1"}>
-          <label className="label-text">
-            <BuildingIcon className="w-3.5 h-3.5 text-campus-400" />
+        <div className={cn("space-y-2", selectedCollege === "Other" ? "sm:col-span-1" : "sm:col-span-1")}>
+          <Label htmlFor="college" className="flex items-center gap-2 text-slate-700">
+            <HugeiconsIcon icon={Building01Icon} className="w-4 h-4 text-campus-500" />
             College / University
-          </label>
-          <select {...register("college")} className="input-field cursor-pointer">
-            <option value="">Select college…</option>
-            {[
-              "I.B P.G College Panipat",
-              "Other",
-            ].map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+          </Label>
+          <Controller
+            name="college"
+            control={control}
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} value={field.value}>
+                <SelectTrigger id="college" className={cn("w-full h-10", errors.college && "border-destructive ring-destructive/20")}>
+                  <SelectValue placeholder="Select college…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {[
+                    "I.B P.G College Panipat",
+                    "Other",
+                  ].map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
           {errors.college && (
-            <p className="error-text">⚠ {errors.college.message}</p>
+            <p className="text-xs text-destructive flex items-center gap-1 animate-fade-in">
+              <span className="text-sm">⚠</span> {errors.college.message}
+            </p>
           )}
         </div>
 
-        {/* Other College Input */}
         {selectedCollege === "Other" && (
-          <div className="animate-fade-in">
-            <label className="label-text">
-              <BuildingIcon className="w-3.5 h-3.5 text-campus-400" />
+          <div className="space-y-2 animate-fade-in">
+            <Label htmlFor="otherCollege" className="flex items-center gap-2 text-slate-700">
+              <HugeiconsIcon icon={Building01Icon} className="w-3.5 h-3.5 text-campus-500" />
               Specify College
-            </label>
-            <input
+            </Label>
+            <Input
+              id="otherCollege"
               {...register("otherCollege")}
-              className="input-field"
               placeholder="Enter your college name"
+              className={cn(errors.otherCollege && "border-destructive ring-destructive/20")}
             />
+            {errors.otherCollege && (
+              <p className="text-xs text-destructive flex items-center gap-1 animate-fade-in">
+                <span className="text-sm">⚠</span> {errors.otherCollege.message}
+              </p>
+            )}
           </div>
         )}
       </div>
 
       <div className="mt-8 flex justify-end">
-        <button type="submit" disabled={isSubmitting} className="btn-primary">
-          Next: Choose Interests →
-        </button>
+        <Button 
+          type="submit" 
+          disabled={isSubmitting} 
+          className="bg-campus-600 hover:bg-campus-700 text-white gap-2 px-8"
+        >
+          Next: Choose Interests
+          <HugeiconsIcon icon={ArrowRight01Icon} className="w-4 h-4" />
+        </Button>
       </div>
     </form>
   );

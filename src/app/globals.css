@@ -33,7 +33,7 @@
   --color-study-line: #e7e5e4;
 
   /* Fonts */
-  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-sans: var(--font-roboto), "Roboto";
   --font-mono: var(--font-geist-mono), monospace;
 
   /* Animations */
@@ -59,7 +59,7 @@
 
 @layer base {
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   * {

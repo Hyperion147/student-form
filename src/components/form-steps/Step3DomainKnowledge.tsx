@@ -1,10 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { BrainCircuitIcon, ChevronRightIcon } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { AiBrainIcon, ArrowRight01Icon, ArrowLeft01Icon } from "@hugeicons/core-free-icons";
 import { Domain, DomainKnowledge, DomainQuestion, DOMAIN_META } from "@/types/form";
 import { saveFormStep } from "@/lib/formStore";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Props {
   selectedDomains: Domain[];
@@ -23,30 +29,7 @@ function getQuestionsForDomains(domains: Domain[]): { domain: Domain; question: 
   return questions;
 }
 
-function MCQOption({ option, selected, onClick }: { option: string; selected: boolean; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "mcq-option w-full text-left",
-        selected && "mcq-option-selected"
-      )}
-    >
-      <div
-        className={cn(
-          "w-4 h-4 rounded-full border-2 shrink-0 transition-all duration-150 flex items-center justify-center",
-          selected ? "border-campus-500 bg-campus-500" : "border-slate-300"
-        )}
-      >
-        {selected && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
-      </div>
-      <span className={cn("text-sm", selected ? "text-campus-700 font-medium" : "text-slate-700")}>
-        {option}
-      </span>
-    </button>
-  );
-}
+// MCQOption removed in favor of RadioGroup
 
 export function Step3DomainKnowledge({ selectedDomains, defaultValues, onNext, onBack }: Props) {
   const allQuestions = getQuestionsForDomains(selectedDomains);
@@ -88,7 +71,7 @@ export function Step3DomainKnowledge({ selectedDomains, defaultValues, onNext, o
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-1">
           <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
-            <BrainCircuitIcon className="w-4 h-4 text-purple-600" />
+            <HugeiconsIcon icon={AiBrainIcon} className="w-4 h-4 text-campus-600" />
           </div>
           <h2 className="text-xl font-bold text-slate-800">Knowledge Check</h2>
         </div>
@@ -99,64 +82,83 @@ export function Step3DomainKnowledge({ selectedDomains, defaultValues, onNext, o
 
       <div className="space-y-8">
         {domainGroups.map(({ domain, meta, questions }) => (
-          <div key={domain} className="rounded-xl border border-slate-200 overflow-hidden">
-            {/* Domain header */}
-            <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+          <Card key={domain} className="overflow-hidden border-slate-200">
+            <CardHeader className="py-3 px-4 bg-slate-50/50 border-b flex-row items-center gap-2 space-y-0">
               <span className="text-lg">{meta.icon}</span>
-              <span className="font-semibold text-sm text-slate-800">{meta.label}</span>
-              <span className="ml-auto text-xs text-slate-400">{questions.length} questions</span>
-            </div>
+              <CardTitle className="text-sm font-semibold text-slate-800">{meta.label}</CardTitle>
+              <span className="ml-auto text-xs text-slate-400 font-normal">{questions.length} questions</span>
+            </CardHeader>
 
-            <div className="p-4 space-y-6">
+            <CardContent className="p-4 space-y-8">
               {questions.map((q, qi) => (
-                <div key={q.id}>
-                  <p className="text-sm font-medium text-slate-800 mb-3 flex gap-2">
-                    <span className="w-5 h-5 rounded-full bg-campus-100 text-campus-700 text-xs flex items-center justify-center font-bold shrink-0 mt-0.5">
+                <div key={q.id} className="space-y-4">
+                  <div className="flex gap-3">
+                    <span className="w-6 h-6 rounded-full bg-campus-100 text-campus-700 text-[10px] flex items-center justify-center font-bold shrink-0">
                       {qi + 1}
                     </span>
-                    {q.question}
-                  </p>
+                    <Label className="text-sm font-semibold text-slate-800 leading-relaxed">
+                      {q.question}
+                    </Label>
+                  </div>
 
                   {q.type === "mcq" && q.options && (
-                    <div className="space-y-2">
+                    <RadioGroup
+                      value={answers[q.id] ?? ""}
+                      onValueChange={(val) => setAnswer(q.id, val)}
+                      className="ml-9 space-y-2"
+                    >
                       {q.options.map((opt) => (
-                        <MCQOption
-                          key={opt}
-                          option={opt}
-                          selected={answers[q.id] === opt}
-                          onClick={() => setAnswer(q.id, opt)}
-                        />
+                        <div key={opt} className="flex items-center space-x-2 group">
+                          <RadioGroupItem value={opt} id={`${q.id}-${opt}`} className="border-slate-300 data-checked:border-campus-500 data-checked:bg-campus-500" />
+                          <Label
+                            htmlFor={`${q.id}-${opt}`}
+                            className={cn(
+                              "text-sm font-normal cursor-pointer transition-colors",
+                              answers[q.id] === opt ? "text-campus-700 font-medium" : "text-slate-600 group-hover:text-slate-900"
+                            )}
+                          >
+                            {opt}
+                          </Label>
+                        </div>
                       ))}
-                    </div>
+                    </RadioGroup>
                   )}
 
                   {q.type === "text" && (
-                    <textarea
-                      value={answers[q.id] ?? ""}
-                      onChange={(e) => setAnswer(q.id, e.target.value)}
-                      className="input-field resize-none"
-                      rows={3}
-                      placeholder="Write your answer here…"
-                    />
+                    <div className="ml-9">
+                      <Textarea
+                        value={answers[q.id] ?? ""}
+                        onChange={(e) => setAnswer(q.id, e.target.value)}
+                        className="min-h-[100px] bg-slate-50/30 border-slate-200 focus:bg-white transition-all resize-none"
+                        placeholder="Share your thoughts here…"
+                      />
+                    </div>
                   )}
 
                   {errors[q.id] && (
-                    <p className="error-text mt-1">⚠ {errors[q.id]}</p>
+                    <p className="text-xs text-destructive ml-9 mt-1 flex items-center gap-1 animate-fade-in">
+                      <span className="text-sm">⚠</span> {errors[q.id]}
+                    </p>
                   )}
                 </div>
               ))}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      <div className="mt-8 flex justify-between">
-        <button type="button" onClick={onBack} className="btn-secondary">
-          ← Back
-        </button>
-        <button type="button" onClick={handleNext} className="btn-primary">
-          Next: Challenges →
-        </button>
+      <div className="mt-10 flex justify-between">
+        <Button variant="outline" onClick={onBack} className="gap-2 px-6">
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="w-4 h-4" />
+          Back
+        </Button>
+        <Button 
+          onClick={handleNext} 
+          className="bg-campus-600 hover:bg-campus-700 text-white gap-2 px-8"
+        >
+          Next: Challenges
+          <HugeiconsIcon icon={ArrowRight01Icon} className="w-4 h-4" />
+        </Button>
       </div>
     </div>
   );

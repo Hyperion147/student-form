@@ -22,7 +22,12 @@ import {
   saveCurrentStep,
   clearFormData,
 } from "@/lib/formStore";
-import { BookOpenIcon, GraduationCapIcon } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { 
+  SparklesIcon, 
+  BookOpen01Icon, 
+  Home01Icon 
+} from "@hugeicons/core-free-icons";
 
 export default function Home() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -114,16 +119,33 @@ export default function Home() {
       {/* Top header */}
       <header className="border-b border-slate-200 bg-white/80 backdrop-blur-sm sticky top-0 z-20">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-campus-600 flex items-center justify-center">
-            <GraduationCapIcon className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h1 className="font-bold text-slate-900 text-sm leading-tight">Campus Compass</h1>
-            <p className="text-xs text-slate-400 leading-tight">AI-Driven Student Career Assessment</p>
-          </div>
-          <div className="ml-auto flex items-center gap-1.5 text-xs text-slate-400">
-            <BookOpenIcon className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Your data is saved as you go</span>
+          <button 
+            onClick={handleReset}
+            className="flex items-center gap-3 group transition-opacity hover:opacity-80"
+          >
+            <div className="w-8 h-8 rounded-lg bg-campus-600 flex items-center justify-center group-hover:shadow-lg transition-all">
+              <HugeiconsIcon icon={SparklesIcon} className="w-5 h-5 text-white" />
+            </div>
+            <div className="text-left">
+              <h1 className="font-bold text-slate-900 text-sm leading-tight">Campus Compass</h1>
+              <p className="text-xs text-slate-400 leading-tight">AI-Driven Student Career Assessment</p>
+            </div>
+          </button>
+          
+          <div className="ml-auto flex items-center gap-4">
+            {(currentStep > 0 || isComplete) && (
+              <button
+                onClick={handleReset}
+                className="flex items-center gap-1.5 text-xs text-campus-600 font-semibold hover:text-campus-800 transition-colors"
+              >
+                <HugeiconsIcon icon={Home01Icon} className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Go to Homepage</span>
+              </button>
+            )}
+            <div className="flex items-center gap-1.5 text-xs text-slate-400">
+              <HugeiconsIcon icon={BookOpen01Icon} className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Your data is saved as you go</span>
+            </div>
           </div>
         </div>
       </header>

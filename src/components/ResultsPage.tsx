@@ -1,7 +1,21 @@
 "use client";
 
 import { FormData, Domain, DOMAIN_META } from "@/types/form";
-import { SparklesIcon, YoutubeIcon, TrophyIcon, BookOpenIcon, ArrowRightIcon, RefreshCwIcon } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { 
+  SparklesIcon, 
+  YoutubeIcon, 
+  Award01Icon, 
+  BookOpen01Icon, 
+  ArrowRight01Icon, 
+  Refresh01Icon, 
+  Mail01Icon, 
+  Layout01Icon 
+} from "@hugeicons/core-free-icons";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 interface Props {
   formData: Partial<FormData>;
@@ -74,139 +88,158 @@ export function ResultsPage({ formData, analysis, onReset }: Props) {
   return (
     <div className="animate-slide-up space-y-8">
       {/* Header */}
-      <div className="text-center py-6 rounded-2xl bg-gradient-to-br from-campus-600 to-indigo-700 text-white relative overflow-hidden">
+      <Card className="border-none bg-gradient-to-br from-campus-600 via-campus-600 to-indigo-700 text-white relative overflow-hidden shadow-xl">
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
-        <div className="relative z-10">
-          <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-3">
-            <TrophyIcon className="w-8 h-8 text-yellow-300" />
+        <CardContent className="relative z-10 py-10 text-center">
+          <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4 backdrop-blur-sm border border-white/30 shadow-inner">
+            <HugeiconsIcon icon={Award01Icon} className="w-8 h-8 text-yellow-300 drop-shadow-md" />
           </div>
-          <h2 className="text-2xl font-bold">Your Results, {name}! 🎉</h2>
-          <p className="text-campus-100 text-sm mt-1">Here's your personalised career assessment</p>
-        </div>
-      </div>
+          <h2 className="text-3xl font-bold tracking-tight">Your Results, {name}! 🎉</h2>
+          <p className="text-campus-100 text-sm mt-2 font-medium opacity-90">AI-Powered Career Roadmap Based on Your Profile</p>
+        </CardContent>
+      </Card>
 
       {/* AI Analysis */}
-      <div className="rounded-2xl border-2 border-campus-200 p-6 bg-campus-50">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-9 h-9 rounded-xl bg-campus-600 flex items-center justify-center">
-            <SparklesIcon className="w-5 h-5 text-white" />
+      <Card className="border-2 border-campus-100 bg-campus-50/30 overflow-hidden">
+        <CardHeader className="flex-row items-center gap-3 space-y-0 px-6 py-5">
+          <div className="w-10 h-10 rounded-xl bg-campus-600 flex items-center justify-center shadow-lg shadow-campus-200">
+            <HugeiconsIcon icon={SparklesIcon} className="w-5 h-5 text-white" />
           </div>
-          <div>
-            <h3 className="font-bold text-slate-800">AI Career Analysis</h3>
-            <p className="text-xs text-slate-400">Powered by Campus Compass AI</p>
+          <div className="flex-1">
+            <CardTitle className="text-lg font-bold text-slate-800">AI Career Analysis</CardTitle>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Powered by Campus Compass Engine</p>
           </div>
           {!analysis && (
-            <span className="ml-auto text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">
-              Coming Soon
-            </span>
+            <Badge variant="outline" className="ml-auto bg-amber-50 text-amber-700 border-amber-200 animate-pulse text-[10px]">
+              Processing Profile
+            </Badge>
           )}
-        </div>
+        </CardHeader>
 
-        {analysis ? (
-          <div className="bg-white rounded-xl p-4 border border-campus-100 text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
-            {analysis}
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {domains.map((d) => {
-              const meta = DOMAIN_META[d];
-              return (
-                <div key={d} className="bg-white rounded-xl p-4 border border-campus-100">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span>{meta.icon}</span>
-                    <span className="font-semibold text-sm text-slate-800">{meta.label}</span>
-                    <div className="ml-auto h-2 w-24 bg-slate-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-campus-400 to-campus-600 rounded-full animate-pulse-soft" style={{ width: "70%" }} />
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    {[...Array(3)].map((_, i) => (
-                      <div key={i} className="h-3 bg-slate-100 rounded-full animate-pulse" style={{ width: `${85 - i * 15}%`, animationDelay: `${i * 0.15}s` }} />
-                    ))}
-                  </div>
-                  <p className="text-xs text-campus-500 mt-3 font-medium flex items-center gap-1">
-                    <SparklesIcon className="w-3 h-3" />
-                    AI analysis will appear here after integration
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        <div className="mt-4 p-3 bg-white rounded-lg border border-campus-100 text-center">
-          <p className="text-sm text-slate-600">
-            📧 A detailed report will be sent to{" "}
-            <strong className="text-campus-600">{formData.submission?.contactValue ?? formData.personalInfo?.email}</strong>
-          </p>
-        </div>
-      </div>
-
-      {/* Roadmap placeholder */}
-      <div className="rounded-xl border border-slate-200 p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <BookOpenIcon className="w-5 h-5 text-campus-600" />
-          <h3 className="font-bold text-slate-800">Your Personalised Roadmap</h3>
-          <span className="ml-auto text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">AI Driven</span>
-        </div>
-        <div className="space-y-2">
-          {["Beginner resources matched to your level", "Project ideas for your portfolio", "Community & mentorship suggestions", "Certification pathway"].map((item, i) => (
-            <div key={i} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-              <div className="w-6 h-6 rounded-full bg-campus-100 text-campus-700 text-xs font-bold flex items-center justify-center shrink-0">
-                {i + 1}
-              </div>
-              <span className="text-sm text-slate-600">{item}</span>
-              <ArrowRightIcon className="w-4 h-4 text-slate-300 ml-auto" />
+        <CardContent className="px-6 pb-6">
+          {analysis ? (
+            <div className="bg-white rounded-xl p-6 border border-campus-100/50 shadow-sm text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
+              {analysis}
             </div>
-          ))}
-        </div>
-      </div>
+          ) : (
+            <div className="space-y-4">
+              {domains.map((d) => {
+                const meta = DOMAIN_META[d];
+                return (
+                  <Card key={d} className="bg-white border-campus-100/50 shadow-sm">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className="text-xl">{meta.icon}</span>
+                        <span className="font-bold text-sm text-slate-800">{meta.label}</span>
+                        <div className="ml-auto h-2 w-24 bg-slate-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-gradient-to-r from-campus-400 to-campus-600 rounded-full animate-pulse-soft" style={{ width: "70%" }} />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        {[...Array(3)].map((_, i) => (
+                          <div key={i} className="h-3 bg-slate-100/60 rounded-full animate-pulse" style={{ width: `${90 - i * 15}%`, animationDelay: `${i * 0.15}s` }} />
+                        ))}
+                      </div>
+                      <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-campus-500 uppercase tracking-tighter italic">
+                        <HugeiconsIcon icon={SparklesIcon} className="w-3 h-3" />
+                        Generating domain specific insights...
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
 
-      {/* YouTube Suggestions */}
-      <div className="rounded-xl border border-red-100 p-5 bg-red-50">
-        <div className="flex items-center gap-2 mb-4">
-          <YoutubeIcon className="w-5 h-5 text-red-600" />
-          <h3 className="font-bold text-slate-800">Motivation & Day-in-the-Life Videos</h3>
-        </div>
-        <p className="text-xs text-slate-500 mb-4">
-          Stay inspired! Here are videos curated for your career path to keep you motivated.
-        </p>
-        <div className="grid grid-cols-1 gap-3">
-          {allVideos.map((video, i) => (
-            <a
-              key={i}
-              href={video.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 bg-white rounded-xl p-3 border border-red-100 hover:border-red-300 hover:shadow-sm transition-all group"
-            >
-              <div className="w-12 h-12 rounded-lg bg-red-100 flex items-center justify-center text-2xl shrink-0">
-                {video.thumbnail}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-800 line-clamp-1 group-hover:text-red-600 transition-colors">
-                  {video.title}
-                </p>
-                <p className="text-xs text-slate-400 mt-0.5">{video.channel}</p>
-                <span className="text-xs text-campus-500 font-medium">
-                  {DOMAIN_META[video.domain as Domain]?.label}
-                </span>
-              </div>
-              <ArrowRightIcon className="w-4 h-4 text-slate-300 shrink-0 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all" />
-            </a>
-          ))}
-        </div>
-      </div>
+          <div className="mt-6 p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-campus-100/50 text-center shadow-inner">
+            <p className="text-xs text-slate-600 flex items-center justify-center gap-2">
+              <HugeiconsIcon icon={Mail01Icon} className="w-3.5 h-3.5 text-campus-500" />
+              Full assessment report sent to:{" "}
+              <span className="font-bold text-campus-700">{formData.submission?.contactValue ?? formData.personalInfo?.email}</span>
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Reset */}
-      <div className="text-center pt-2">
-        <button
+      <Card className="border-slate-200 shadow-sm">
+        <CardHeader className="flex-row items-center gap-2 space-y-0 px-5 py-4 border-b">
+          <HugeiconsIcon icon={Layout01Icon} className="w-5 h-5 text-campus-600" />
+          <CardTitle className="text-base font-bold text-slate-800">Your Action Plan</CardTitle>
+          <Badge className="ml-auto bg-campus-50 text-campus-700 hover:bg-campus-100 border-none font-bold text-[10px]">
+            AI GENERATED
+          </Badge>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="divide-y divide-slate-100">
+            {[
+              "Beginner resources matched to your level", 
+              "Project ideas for your portfolio", 
+              "Community & mentorship suggestions", 
+              "Certification pathway"
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-4 px-5 py-4 group transition-colors hover:bg-slate-50/50">
+                <div className="w-7 h-7 rounded-full bg-campus-50 text-campus-700 text-xs font-bold flex items-center justify-center shrink-0 border border-campus-100 group-hover:bg-campus-600 group-hover:text-white transition-all">
+                  {i + 1}
+                </div>
+                <span className="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">{item}</span>
+                <HugeiconsIcon icon={ArrowRight01Icon} className="w-4 h-4 text-slate-300 ml-auto group-hover:text-campus-500 group-hover:translate-x-1 transition-all" />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-red-100 bg-red-50/30 overflow-hidden shadow-sm">
+        <CardHeader className="flex-row items-center gap-2 space-y-0 px-5 py-4 border-b border-red-100 bg-red-50/50">
+          <HugeiconsIcon icon={YoutubeIcon} className="w-5 h-5 text-red-600" />
+          <CardTitle className="text-base font-bold text-slate-800">Learning & Inspiration</CardTitle>
+        </CardHeader>
+        <CardContent className="p-5 space-y-4">
+          <p className="text-xs text-slate-500">
+            Handpicked videos to keep you inspired on your selected domains.
+          </p>
+          <div className="grid grid-cols-1 gap-3">
+            {allVideos.map((video, i) => (
+              <a
+                key={i}
+                href={video.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 bg-white rounded-xl p-3 border border-red-100/50 hover:border-red-300 hover:shadow-md transition-all group active:scale-[0.98]"
+              >
+                <div className="w-12 h-12 rounded-lg bg-red-50 flex items-center justify-center text-2xl shrink-0 group-hover:bg-red-100 transition-colors">
+                  {video.thumbnail}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-slate-800 line-clamp-1 group-hover:text-red-600 transition-colors">
+                    {video.title}
+                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 font-medium">{video.channel}</span>
+                    <Separator orientation="vertical" className="h-2 bg-slate-200" />
+                    <span className="text-[10px] text-campus-600 font-bold uppercase tracking-tighter">
+                      {DOMAIN_META[video.domain as Domain]?.label}
+                    </span>
+                  </div>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 group-hover:bg-red-50 group-hover:text-red-500 transition-all">
+                  <HugeiconsIcon icon={ArrowRight01Icon} className="w-4 h-4" />
+                </div>
+              </a>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="text-center pt-8 border-t border-slate-100">
+        <Button
+          variant="ghost"
           onClick={onReset}
-          className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-slate-600 transition-colors"
+          className="text-slate-400 hover:text-red-600 hover:bg-red-50 gap-2 transition-all"
         >
-          <RefreshCwIcon className="w-4 h-4" />
-          Start a new assessment
-        </button>
+          <HugeiconsIcon icon={Refresh01Icon} className="w-4 h-4" />
+          Retake Assessment
+        </Button>
       </div>
     </div>
   );

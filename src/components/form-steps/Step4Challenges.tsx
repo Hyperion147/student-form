@@ -3,9 +3,16 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { MountainIcon, RouteIcon } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { MountainIcon, RouteIcon, ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { ChallengesInfo } from "@/types/form";
 import { saveFormStep } from "@/lib/formStore";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 const schema = z.object({
   difficulties: z.string().min(20, "Please describe your difficulties in at least 20 characters."),
@@ -44,7 +51,7 @@ export function Step4Challenges({ defaultValues, onNext, onBack }: Props) {
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-1">
           <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
-            <MountainIcon className="w-4 h-4 text-red-500" />
+            <HugeiconsIcon icon={MountainIcon} className="w-4 h-4 text-campus-600" />
           </div>
           <h2 className="text-xl font-bold text-slate-800">Your Challenges & Goals</h2>
         </div>
@@ -53,115 +60,139 @@ export function Step4Challenges({ defaultValues, onNext, onBack }: Props) {
         </p>
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-6">
         {/* Difficulties */}
-        <div className="rounded-xl border border-slate-200 p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-6 h-6 rounded-full bg-red-50 flex items-center justify-center">
-              <span className="text-xs">🧱</span>
+        <Card className="border-slate-200">
+          <CardHeader className="py-3 px-4 flex-row items-center gap-2 space-y-0">
+            <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-sm">
+              🧱
             </div>
-            <label className="text-sm font-semibold text-slate-800">
+            <CardTitle className="text-sm font-semibold text-slate-800">
               What difficulties are you currently facing?
-            </label>
-          </div>
-          <p className="text-xs text-slate-400 mb-2 ml-8">
-            e.g. Lack of mentorship, struggling with specific concepts, time management, resources…
-          </p>
-          <textarea
-            {...register("difficulties")}
-            className="input-field resize-none"
-            rows={4}
-            placeholder="Be honest — this is just for your assessment…"
-          />
-          <div className="flex justify-between mt-1">
-            {errors.difficulties ? (
-              <p className="error-text">⚠ {errors.difficulties.message}</p>
-            ) : (
-              <span />
-            )}
-            <span className="text-xs text-slate-400">{difficulties.length} chars</span>
-          </div>
-        </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-4 pb-4 space-y-3">
+            <p className="text-xs text-slate-400">
+              e.g. Lack of mentorship, struggling with specific concepts, time management, resources…
+            </p>
+            <Textarea
+              {...register("difficulties")}
+              className="min-h-[100px] resize-none"
+              placeholder="Be honest — this is just for your assessment…"
+            />
+            <div className="flex justify-between items-center text-[10px] sm:text-xs">
+              {errors.difficulties ? (
+                <p className="text-destructive flex items-center gap-1">
+                  <span className="text-sm">⚠</span> {errors.difficulties.message}
+                </p>
+              ) : (
+                <span className="text-slate-400">Be descriptive for better AI analysis</span>
+              )}
+              <span className={cn(
+                "font-medium",
+                difficulties.length < 20 ? "text-amber-500" : "text-slate-400"
+              )}>
+                {difficulties.length} characters
+              </span>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Approach */}
-        <div className="rounded-xl border border-slate-200 p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center">
-              <span className="text-xs">🪜</span>
+        <Card className="border-slate-200">
+          <CardHeader className="py-3 px-4 flex-row items-center gap-2 space-y-0">
+            <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-sm">
+              🪜
             </div>
-            <label className="text-sm font-semibold text-slate-800">
+            <CardTitle className="text-sm font-semibold text-slate-800">
               What approach have you taken so far?
-            </label>
-          </div>
-          <p className="text-xs text-slate-400 mb-2 ml-8">
-            e.g. Online courses, building projects, reading books, joining communities…
-          </p>
-          <textarea
-            {...register("approach")}
-            className="input-field resize-none"
-            rows={4}
-            placeholder="Even small steps count. Share what you've tried…"
-          />
-          <div className="flex justify-between mt-1">
-            {errors.approach ? (
-              <p className="error-text">⚠ {errors.approach.message}</p>
-            ) : (
-              <span />
-            )}
-            <span className="text-xs text-slate-400">{approach.length} chars</span>
-          </div>
-        </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-4 pb-4 space-y-3">
+            <p className="text-xs text-slate-400">
+              e.g. Online courses, building projects, reading books, joining communities…
+            </p>
+            <Textarea
+              {...register("approach")}
+              className="min-h-[100px] resize-none"
+              placeholder="Even small steps count. Share what you've tried…"
+            />
+            <div className="flex justify-between items-center text-[10px] sm:text-xs">
+              {errors.approach ? (
+                <p className="text-destructive flex items-center gap-1">
+                  <span className="text-sm">⚠</span> {errors.approach.message}
+                </p>
+              ) : (
+                <span className="text-slate-400">The more you share, the better we can help</span>
+              )}
+              <span className={cn(
+                "font-medium",
+                approach.length < 20 ? "text-amber-500" : "text-slate-400"
+              )}>
+                {approach.length} characters
+              </span>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Goals */}
-        <div className="rounded-xl border border-slate-200 p-4">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-6 h-6 rounded-full bg-campus-50 flex items-center justify-center">
-              <RouteIcon className="w-3.5 h-3.5 text-campus-600" />
+        <Card className="border-slate-200">
+          <CardHeader className="py-3 px-4 flex-row items-center gap-2 space-y-0">
+            <div className="w-8 h-8 rounded-full bg-campus-100 flex items-center justify-center">
+              <HugeiconsIcon icon={RouteIcon} className="w-4 h-4 text-campus-600" />
             </div>
-            <span className="text-sm font-semibold text-slate-800">Your Goals</span>
-          </div>
+            <CardTitle className="text-sm font-semibold text-slate-800">Your Goals</CardTitle>
+          </CardHeader>
+          <CardContent className="px-4 pb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="shortTermGoal" className="flex items-center gap-2 text-slate-700">
+                  <span className="text-base">🎯</span>
+                  Short-term Goal
+                </Label>
+                <Input
+                  id="shortTermGoal"
+                  {...register("shortTermGoal")}
+                  placeholder="e.g. Build 2 full-stack projects"
+                  className={cn(errors.shortTermGoal && "border-destructive ring-destructive/20")}
+                />
+                {errors.shortTermGoal && (
+                  <p className="text-xs text-destructive animate-fade-in">⚠ {errors.shortTermGoal.message}</p>
+                )}
+              </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="label-text">
-                <span className="text-base">🎯</span>
-                Short-term Goal (next 6 months)
-              </label>
-              <input
-                {...register("shortTermGoal")}
-                className="input-field"
-                placeholder="e.g. Build 2 full-stack projects"
-              />
-              {errors.shortTermGoal && (
-                <p className="error-text">⚠ {errors.shortTermGoal.message}</p>
-              )}
+              <div className="space-y-2">
+                <Label htmlFor="longTermGoal" className="flex items-center gap-2 text-slate-700">
+                  <span className="text-base">🚀</span>
+                  Long-term Goal
+                </Label>
+                <Input
+                  id="longTermGoal"
+                  {...register("longTermGoal")}
+                  placeholder="e.g. Get a job at a top tech company"
+                  className={cn(errors.longTermGoal && "border-destructive ring-destructive/20")}
+                />
+                {errors.longTermGoal && (
+                  <p className="text-xs text-destructive animate-fade-in">⚠ {errors.longTermGoal.message}</p>
+                )}
+              </div>
             </div>
-
-            <div>
-              <label className="label-text">
-                <span className="text-base">🚀</span>
-                Long-term Goal (1–3 years)
-              </label>
-              <input
-                {...register("longTermGoal")}
-                className="input-field"
-                placeholder="e.g. Get a job at a top tech company"
-              />
-              {errors.longTermGoal && (
-                <p className="error-text">⚠ {errors.longTermGoal.message}</p>
-              )}
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <div className="mt-8 flex justify-between">
-        <button type="button" onClick={onBack} className="btn-secondary">
-          ← Back
-        </button>
-        <button type="submit" className="btn-primary">
-          Next: Final Submit →
-        </button>
+      <div className="mt-10 flex justify-between">
+        <Button variant="outline" type="button" onClick={onBack} className="gap-2 px-6">
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="w-4 h-4" />
+          Back
+        </Button>
+        <Button 
+          type="submit" 
+          className="bg-campus-600 hover:bg-campus-700 text-white gap-2 px-8"
+        >
+          Next: Final Submit
+          <HugeiconsIcon icon={ArrowRight01Icon} className="w-4 h-4" />
+        </Button>
       </div>
     </form>
   );
