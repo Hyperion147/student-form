@@ -23,21 +23,32 @@ interface Props {
   onNext: (data: PersonalInfo) => void;
 }
 
-const years = ["1st Year", "2nd Year", "3rd Year", "4th Year", "Post Graduate"];
+const years = ["1st Year", "2nd Year", "3rd Year"];
 
 export function Step1PersonalInfo({ defaultValues, onNext }: Props) {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
-  } = useForm<PersonalInfo>({
+  } = useForm<PersonalInfo & { otherBranch?: string; otherCollege?: string }>({
     resolver: zodResolver(schema),
     defaultValues: defaultValues ?? {},
   });
 
-  const onSubmit = (data: PersonalInfo) => {
-    saveFormStep("personalInfo", data);
-    onNext(data);
+  const selectedBranch = watch("branch");
+  const selectedCollege = watch("college");
+
+  const onSubmit = (data: PersonalInfo & { otherBranch?: string; otherCollege?: string }) => {
+    const finalData: PersonalInfo = {
+      ...data,
+      branch: data.branch === "Other" ? (data.otherBranch || "Other") : data.branch,
+      college: data.college === "Other" ? (data.otherCollege || "Other") : data.college,
+    };
+    // Remove the temporary fields before saving
+    const { otherBranch, otherCollege, ...rest } = finalData as any;
+    saveFormStep("personalInfo", rest);
+    onNext(rest);
   };
 
   return (
@@ -139,36 +150,82 @@ export function Step1PersonalInfo({ defaultValues, onNext }: Props) {
         </div>
 
         {/* Branch */}
-        <div>
+        <div className={selectedBranch === "Other" ? "sm:col-span-1" : "sm:col-span-1"}>
           <label className="label-text">
             <BookOpenIcon className="w-3.5 h-3.5 text-campus-400" />
             Branch / Course
           </label>
-          <input
-            {...register("branch")}
-            className="input-field"
-            placeholder="e.g. Computer Science & Engineering"
-          />
+          <select {...register("branch")} className="input-field cursor-pointer">
+            <option value="">Select branch…</option>
+            {[
+              "BCA",
+              "BBA",
+              "B.A",
+              "B.Sc",
+              "B.Com",
+              "Other",
+            ].map((b) => (
+              <option key={b} value={b}>
+                {b}
+              </option>
+            ))}
+          </select>
           {errors.branch && (
             <p className="error-text">⚠ {errors.branch.message}</p>
           )}
         </div>
 
+        {/* Other Branch Input */}
+        {selectedBranch === "Other" && (
+          <div className="animate-fade-in">
+            <label className="label-text">
+              <BookOpenIcon className="w-3.5 h-3.5 text-campus-400" />
+              Specify Branch
+            </label>
+            <input
+              {...register("otherBranch")}
+              className="input-field"
+              placeholder="Enter your branch name"
+            />
+          </div>
+        )}
+
         {/* College */}
-        <div>
+        <div className={selectedCollege === "Other" ? "sm:col-span-1" : "sm:col-span-1"}>
           <label className="label-text">
             <BuildingIcon className="w-3.5 h-3.5 text-campus-400" />
             College / University
           </label>
-          <input
-            {...register("college")}
-            className="input-field"
-            placeholder="e.g. IIT Delhi"
-          />
+          <select {...register("college")} className="input-field cursor-pointer">
+            <option value="">Select college…</option>
+            {[
+              "I.B P.G College Panipat",
+              "Other",
+            ].map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
           {errors.college && (
             <p className="error-text">⚠ {errors.college.message}</p>
           )}
         </div>
+
+        {/* Other College Input */}
+        {selectedCollege === "Other" && (
+          <div className="animate-fade-in">
+            <label className="label-text">
+              <BuildingIcon className="w-3.5 h-3.5 text-campus-400" />
+              Specify College
+            </label>
+            <input
+              {...register("otherCollege")}
+              className="input-field"
+              placeholder="Enter your college name"
+            />
+          </div>
+        )}
       </div>
 
       <div className="mt-8 flex justify-end">
