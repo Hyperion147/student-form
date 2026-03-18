@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --campus-primary: #4f46e5;
+  --campus-accent: #f97316;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-slate-50 text-slate-900;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .notebook-bg {
+    background-color: #fefce8;
+    background-image: repeating-linear-gradient(
+      transparent,
+      transparent 31px,
+      #cbd5e1 31px,
+      #cbd5e1 32px
+    );
+    background-size: 100% 32px;
+  }
+
+  .notebook-bg-white {
+    background-color: #ffffff;
+    background-image: repeating-linear-gradient(
+      transparent,
+      transparent 31px,
+      #e2e8f0 31px,
+      #e2e8f0 32px
+    );
+    background-size: 100% 32px;
+  }
+
+  .grid-dots-bg {
+    background-image: radial-gradient(circle, #6366f118 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .form-card {
+    @apply bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden;
+  }
+
+  .step-indicator-active {
+    @apply bg-campus-600 text-white shadow-lg shadow-campus-200;
+  }
+
+  .step-indicator-done {
+    @apply bg-campus-100 text-campus-700;
+  }
+
+  .step-indicator-inactive {
+    @apply bg-slate-100 text-slate-400;
+  }
+
+  .domain-card {
+    @apply relative rounded-xl border-2 border-slate-200 p-4 cursor-pointer transition-all duration-200
+      hover:border-campus-400 hover:shadow-md hover:shadow-campus-100;
+  }
+
+  .domain-card-selected {
+    @apply border-campus-500 bg-campus-50 shadow-md shadow-campus-100;
+  }
+
+  .input-field {
+    @apply w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800
+      placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-campus-400 focus:border-transparent
+      transition-all duration-150;
+  }
+
+  .label-text {
+    @apply text-sm font-medium text-slate-700 mb-1.5 flex items-center gap-1.5;
+  }
+
+  .error-text {
+    @apply text-xs text-red-500 mt-1 flex items-center gap-1;
+  }
+
+  .btn-primary {
+    @apply px-6 py-2.5 bg-campus-600 hover:bg-campus-700 text-white font-medium rounded-lg
+      shadow-sm transition-all duration-150 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-2.5 bg-white hover:bg-slate-50 text-slate-700 font-medium rounded-lg
+      border border-slate-200 shadow-sm transition-all duration-150 active:scale-95;
+  }
+
+  .mcq-option {
+    @apply flex items-center gap-3 p-3 rounded-lg border-2 border-slate-200 cursor-pointer
+      hover:border-campus-300 hover:bg-campus-50 transition-all duration-150;
+  }
+
+  .mcq-option-selected {
+    @apply border-campus-500 bg-campus-50;
+  }
+
+  .pencil-marker {
+    @apply inline-block w-1 h-5 rounded-full bg-amber-400 mr-2;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
