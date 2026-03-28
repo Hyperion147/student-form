@@ -17,10 +17,30 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const schema = z.object({
   deliveryMethod: z.enum(["email", "whatsapp", "both"]),
-  contactValue: z.string().min(5, "Please enter a valid contact."),
+  emailInput: z.string().optional(),
+  whatsappInput: z.string().optional(),
   agreeToTerms: z.boolean().refine((v) => v === true, {
     message: "You must agree to receive your results.",
   }),
+}).superRefine((data, ctx) => {
+  if (data.deliveryMethod === "email" || data.deliveryMethod === "both") {
+    if (!data.emailInput || !/^\S+@\S+\.\S+$/.test(data.emailInput)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["emailInput"],
+        message: "Please enter a valid email address.",
+      });
+    }
+  }
+  if (data.deliveryMethod === "whatsapp" || data.deliveryMethod === "both") {
+    if (!data.whatsappInput || data.whatsappInput.length < 5) { // Basic length check for international
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["whatsappInput"],
+        message: "Please enter a valid WhatsApp number.",
+      });
+    }
+  }
 });
 
 interface Props {
@@ -75,7 +95,6 @@ export function Step5Submission({ defaultEmail, defaultValues, onSubmit, onBack,
       whatsappInput: defaultValues?.deliveryMethod === "both" 
         ? (defaultValues?.contactValue ?? "").split('|')[1] 
         : (defaultValues?.deliveryMethod === "whatsapp" ? defaultValues?.contactValue : ""),
-      contactValue: defaultValues?.contactValue ?? "",
       agreeToTerms: false,
     },
   });
@@ -187,8 +206,13 @@ export function Step5Submission({ defaultEmail, defaultValues, onSubmit, onBack,
               {...register("emailInput")}
               type="email"
               placeholder="your@email.com"
-              className={cn(errors.contactValue && "border-destructive ring-destructive/20")}
+              className={cn("transition-all duration-300", errors.emailInput && "border-destructive ring-destructive/20")}
             />
+            {errors.emailInput && (
+              <p className="text-xs text-destructive flex items-center gap-1 animate-fade-in mt-1">
+                <span className="text-sm">⚠</span> {errors.emailInput.message}
+              </p>
+            )}
           </div>
         )}
         {isWhatsapp && (
@@ -202,14 +226,14 @@ export function Step5Submission({ defaultEmail, defaultValues, onSubmit, onBack,
               {...register("whatsappInput")}
               type="tel"
               placeholder="+91 98765 43210"
-              className={cn(errors.contactValue && "border-destructive ring-destructive/20")}
+              className={cn("transition-all duration-300", errors.whatsappInput && "border-destructive ring-destructive/20")}
             />
+            {errors.whatsappInput && (
+              <p className="text-xs text-destructive flex items-center gap-1 animate-fade-in mt-1">
+                <span className="text-sm">⚠</span> {errors.whatsappInput.message}
+              </p>
+            )}
           </div>
-        )}
-        {errors.contactValue && (
-          <p className="text-xs text-destructive flex items-center gap-1 animate-fade-in">
-            <span className="text-sm">⚠</span> {errors.contactValue.message}
-          </p>
         )}
       </div>
 

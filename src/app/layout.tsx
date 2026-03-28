@@ -5,7 +5,7 @@ import "./globals.css";
 const roboto = Roboto({ subsets: ["latin"], weight: ["300", "400", "500", "700", "900"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Student Career Assessment | Campus Compass",
+  title: "Student Career Assessment | fragbasic.fun",
   description: "Discover your path with AI-driven career insights tailored for students.",
 };
 

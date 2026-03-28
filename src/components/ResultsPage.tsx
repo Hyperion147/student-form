@@ -107,7 +107,7 @@ export function ResultsPage({ formData, analysis, onReset }: Props) {
           </div>
           <div className="flex-1">
             <CardTitle className="text-lg font-bold text-slate-800">AI Career Analysis</CardTitle>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Powered by Campus Compass Engine</p>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Powered by fragbasic.fun Engine</p>
           </div>
           {!analysis && (
             <Badge variant="outline" className="ml-auto bg-amber-50 text-amber-700 border-amber-200 animate-pulse text-[10px]">

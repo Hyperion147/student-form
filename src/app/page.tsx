@@ -127,7 +127,7 @@ export default function Home() {
               <HugeiconsIcon icon={SparklesIcon} className="w-5 h-5 text-white" />
             </div>
             <div className="text-left">
-              <h1 className="font-bold text-slate-900 text-sm leading-tight">Campus Compass</h1>
+              <h1 className="font-bold text-slate-900 text-sm leading-tight">fragbasic.fun</h1>
               <p className="text-xs text-slate-400 leading-tight">AI-Driven Student Career Assessment</p>
             </div>
           </button>
@@ -152,18 +152,23 @@ export default function Home() {
 
       {/* Hero banner (only on step 0) */}
       {currentStep === 0 && !isComplete && (
-        <div className="bg-gradient-to-br from-campus-700 via-campus-600 to-indigo-600 text-white">
-          <div className="max-w-3xl mx-auto px-4 py-10 text-center">
-            <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 text-xs font-medium mb-4 backdrop-blur-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+        <div className="relative overflow-hidden bg-slate-950 text-white">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f46e5,#0ea5e9)] opacity-10" />
+          <div className="absolute top-0 -translate-y-1/2 translate-x-1/3 right-0 w-[500px] h-[500px] bg-indigo-600/30 rounded-full mix-blend-screen filter blur-[80px] animate-pulse-soft" />
+          <div className="absolute bottom-0 translate-y-1/3 -translate-x-1/4 left-0 w-[400px] h-[400px] bg-fuchsia-600/20 rounded-full mix-blend-screen filter blur-[60px] animate-pulse-soft" style={{ animationDelay: '1s'}} />
+          
+          <div className="relative max-w-3xl mx-auto px-4 py-16 sm:py-20 text-center">
+            <div className="inline-flex items-center gap-2 bg-white/5 rounded-full px-4 py-1.5 text-xs font-medium mb-6 backdrop-blur-md border border-white/10 shadow-2xl">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.8)]" />
               Free for all students · Takes ~5 minutes
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-3 leading-tight">
-              Discover Your Career Path 🎓
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 tracking-tight flex flex-col gap-1 sm:gap-2">
+              <span className="text-white">Discover Your</span>
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-fuchsia-400 to-cyan-400">Ideal Career Path</span>
             </h2>
-            <p className="text-campus-100 text-sm sm:text-base max-w-xl mx-auto">
-              Answer a few questions and get AI-powered insights about your ideal tech career,
-              personalised roadmap, and curated resources — all for free.
+            <p className="text-slate-300 text-sm sm:text-base md:text-lg max-w-xl mx-auto leading-relaxed">
+              Answer a few questions and get AI-powered insights about your perfect role,
+              personalised roadmap, and curated resources.
             </p>
           </div>
         </div>
@@ -246,7 +251,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-white py-4">
         <div className="max-w-3xl mx-auto px-4 text-center text-xs text-slate-400">
-          Campus Compass · Built for students, by students ·{" "}
+          fragbasic.fun · Built for students, by students ·{" "}
           <span className="text-campus-500">AI results powered by Claude</span>
         </div>
       </footer>

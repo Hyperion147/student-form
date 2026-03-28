@@ -99,22 +99,23 @@
   }
 
   .form-card {
-    @apply bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden;
+    @apply bg-white/95 backdrop-blur-xl rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-900/5 overflow-hidden transition-all duration-300;
   }
 
   .step-indicator-active {
-    background-color: var(--color-campus-600);
+    background: linear-gradient(135deg, var(--color-campus-600), var(--color-campus-500));
     color: white;
-    box-shadow: 0 10px 15px -3px var(--color-campus-200);
+    box-shadow: 0 10px 25px -5px var(--color-campus-300);
   }
 
   .step-indicator-done {
-    background-color: var(--color-campus-100);
-    color: var(--color-campus-700);
+    background-color: var(--color-campus-50);
+    color: var(--color-campus-600);
+    border: 1px solid var(--color-campus-100);
   }
 
   .step-indicator-inactive {
-    @apply bg-slate-100 text-slate-400;
+    @apply bg-slate-50 text-slate-400 border border-slate-100;
   }
 
   .domain-card {
