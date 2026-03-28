@@ -207,6 +207,8 @@ export default function Home() {
               )}
               {currentStep === 3 && (
                 <Step4Challenges
+                  selectedDomains={formData.domainInterests?.selectedDomains ?? []}
+                  domainKnowledge={formData.domainKnowledge}
                   defaultValues={formData.challenges}
                   onNext={handleStep4}
                   onBack={() => goToStep(2)}
