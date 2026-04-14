@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Stepper } from "@/components/Stepper";
 import { Step1PersonalInfo } from "@/components/form-steps/Step1PersonalInfo";
-import { Step2DomainInterests } from "@/components/form-steps/Step2DomainInterests";
+import { Step2InterestQuiz } from "@/components/form-steps/Step2InterestQuiz";
 import { Step3DomainKnowledge } from "@/components/form-steps/Step3DomainKnowledge";
 import { Step4Challenges } from "@/components/form-steps/Step4Challenges";
 import { Step5Submission } from "@/components/form-steps/Step5Submission";
@@ -196,7 +196,7 @@ export default function Home() {
                 />
               )}
               {currentStep === 1 && (
-                <Step2DomainInterests
+                <Step2InterestQuiz
                   defaultValues={formData.domainInterests}
                   onNext={handleStep2}
                   onBack={() => goToStep(0)}

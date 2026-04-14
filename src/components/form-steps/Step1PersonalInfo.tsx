@@ -333,7 +333,7 @@ export function Step1PersonalInfo({ defaultValues, onNext }: Props) {
           disabled={isSubmitting} 
           className="bg-campus-600 hover:bg-campus-700 text-white gap-2 px-8"
         >
-          Next: Choose Interests
+          Next: Interest Quiz
           <HugeiconsIcon icon={ArrowRight01Icon} className="w-4 h-4" />
         </Button>
       </div>

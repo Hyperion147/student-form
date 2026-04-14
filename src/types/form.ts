@@ -13,7 +13,9 @@ export interface PersonalInfo {
 }
 
 export interface DomainInterests {
+  answers: Record<string, string>;
   selectedDomains: Domain[];
+  inferredDomains: InferredDomainMatch[];
 }
 
 export interface DomainQuestion {
@@ -25,6 +27,12 @@ export interface DomainQuestion {
 
 export interface DomainKnowledge {
   answers: Record<string, string>;
+}
+
+export interface InferredDomainMatch {
+  domain: Domain;
+  score: number;
+  reasons: string[];
 }
 
 export interface ChallengesInfo {
@@ -61,7 +69,7 @@ export const DOMAIN_META: Record<string, DomainMeta> = EXT_DOMAIN_META;
 
 export const STEP_LABELS = [
   "Personal Info",
-  "Interests",
+  "Interest Quiz",
   "Knowledge Check",
   "Challenges",
   "Submit",

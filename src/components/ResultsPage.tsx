@@ -79,6 +79,7 @@ const YOUTUBE_SUGGESTIONS: Record<Domain, { title: string; channel: string; url:
 
 export function ResultsPage({ formData, analysis, onReset }: Props) {
   const domains = formData.domainInterests?.selectedDomains ?? [];
+  const inferredDomains = formData.domainInterests?.inferredDomains ?? [];
   const name = formData.personalInfo?.fullName?.split(" ")[0] ?? "Student";
 
   const allVideos = domains.flatMap((d) =>
@@ -160,6 +161,37 @@ export function ResultsPage({ formData, analysis, onReset }: Props) {
           </div>
         </CardContent>
       </Card>
+
+      {inferredDomains.length > 0 && (
+        <Card className="border-slate-200 shadow-sm">
+          <CardHeader className="flex-row items-center gap-2 space-y-0 px-5 py-4 border-b">
+            <HugeiconsIcon icon={SparklesIcon} className="w-5 h-5 text-campus-600" />
+            <CardTitle className="text-base font-bold text-slate-800">Inferred Interests</CardTitle>
+          </CardHeader>
+          <CardContent className="p-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {inferredDomains.map((match, index) => {
+              const meta = DOMAIN_META[match.domain];
+
+              return (
+                <div key={match.domain} className="rounded-xl border border-slate-200 bg-white p-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{meta.icon}</span>
+                    <div>
+                      <p className="text-sm font-bold text-slate-800">{meta.label}</p>
+                      <p className="text-[10px] uppercase tracking-wide text-campus-600 font-bold">
+                        Match #{index + 1}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-xs text-slate-500 leading-relaxed">
+                    {match.reasons.join(" • ")}
+                  </p>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      )}
 
       <Card className="border-slate-200 shadow-sm">
         <CardHeader className="flex-row items-center gap-2 space-y-0 px-5 py-4 border-b">

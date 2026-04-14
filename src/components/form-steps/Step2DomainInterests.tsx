@@ -43,7 +43,15 @@ export function Step2DomainInterests({ defaultValues, onNext, onBack }: Props) {
       setError(`Please select at least ${MIN_DOMAINS} domains you're interested in.`);
       return;
     }
-    const data: DomainInterests = { selectedDomains: selected };
+    const data: DomainInterests = {
+      answers: {},
+      selectedDomains: selected,
+      inferredDomains: selected.map((domain) => ({
+        domain,
+        score: 0,
+        reasons: [],
+      })),
+    };
     saveFormStep("domainInterests", data);
     onNext(data);
   };

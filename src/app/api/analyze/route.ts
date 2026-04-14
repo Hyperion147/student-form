@@ -1,11 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { FormData, DOMAIN_META } from "@/types/form";
+import { PROFILING_QUESTIONS } from "@/lib/domainInference";
 
 export async function POST(req: NextRequest) {
   try {
     const formData: FormData = await req.json();
 
     const { personalInfo, domainInterests, domainKnowledge, challenges } = formData;
+
+    const profilingSummary = PROFILING_QUESTIONS.map((question) => {
+      const answerValue = domainInterests.answers?.[question.id];
+      const answerLabel =
+        question.options.find((option) => option.value === answerValue)?.label ??
+        "Not answered";
+
+      return `- ${question.question}: ${answerLabel}`;
+    }).join("\n");
+
+    const inferredDomainsSummary = domainInterests.inferredDomains
+      .map((match, index) => {
+        const meta = DOMAIN_META[match.domain];
+        return `${index + 1}. ${meta.label} (score ${match.score}) because of: ${match.reasons.join(", ")}`;
+      })
+      .join("\n");
 
     // Build a rich prompt for Claude
     const domainDetails = domainInterests.selectedDomains
@@ -35,10 +52,16 @@ Student Profile:
 - Year: ${personalInfo.year}, Branch: ${personalInfo.branch}
 - College: ${personalInfo.college}
 
-Chosen Domains: ${domainInterests.selectedDomains.join(", ")}
+    Inferred Domains: ${domainInterests.selectedDomains.join(", ")}
 
-Domain Knowledge Responses:
-${domainDetails}
+    Interest Discovery Answers:
+    ${profilingSummary}
+
+    Why these domains were inferred:
+    ${inferredDomainsSummary}
+
+    Domain Knowledge Responses:
+    ${domainDetails}
 
 Challenges: ${challenges.difficulties}
 Approach Taken: ${challenges.approach}
